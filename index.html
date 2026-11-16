@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>LinkFire</title>
+<meta name="theme-color" content="#2f6bff">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/logo.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/icon-192.png">
+<style>
+:root{--bg:#f3f5fb;--bg2:#e9eefc;--card:#fff;--text:#141824;--muted:#667089;--line:#e1e6f2;--accent:#2f6bff;--accent2:#8a4dff;--accent-t:#fff;--shadow:0 6px 24px rgba(30,50,110,.08);--chip:#eef2ff;color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0e15;--bg2:#121733;--card:#161b27;--text:#eef1f8;--muted:#9aa4bb;--line:#252c3d;--accent:#5b8cff;--accent2:#a37bff;--shadow:0 8px 28px rgba(0,0,0,.45);--chip:#1d2540;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0b0e15;--bg2:#121733;--card:#161b27;--text:#eef1f8;--muted:#9aa4bb;--line:#252c3d;--accent:#5b8cff;--accent2:#a37bff;--shadow:0 8px 28px rgba(0,0,0,.45);--chip:#1d2540;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;background:var(--bg);background-image:radial-gradient(900px 340px at 50% -80px,var(--bg2),transparent);color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:18px 16px 48px}
+.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:6px}
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:44px;height:44px;border-radius:13px;box-shadow:0 6px 18px rgba(80,90,255,.35)}
+h1{font-size:23px;margin:0;letter-spacing:-.3px}
+.theme{width:44px;height:44px;border-radius:14px;padding:0;font-size:20px;background:var(--card);border:1px solid var(--line);box-shadow:var(--shadow);color:var(--text)}
+.sub{color:var(--muted);margin:10px 0 18px;font-size:14.5px}
+.search{position:relative}
+.search span{position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:17px;opacity:.7;pointer-events:none}
+input{width:100%;padding:14px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:inherit;box-shadow:var(--shadow)}
+.search input{padding-left:44px}
+input:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px color-mix(in srgb,var(--accent) 25%,transparent)}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:13px 16px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-t);font-weight:600}
+button:active{transform:scale(.98)}button:disabled{opacity:.6}
+.card{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin:12px 0;box-shadow:var(--shadow)}
+details.add summary{cursor:pointer;font-weight:600;list-style:none}
+details.add summary::-webkit-details-marker{display:none}
+.form{display:grid;gap:10px;margin-top:12px}
+.msg{font-size:13px;color:var(--muted);min-height:18px}.msg.err{color:#e04646}
+.bar{margin:16px 4px 2px;color:var(--muted);font-size:13px}
+.item{display:flex;gap:12px;align-items:center;animation:in .25s ease both}
+@keyframes in{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.ico{flex:none;width:46px;height:46px;border-radius:13px;display:grid;place-items:center;font-size:22px;background:var(--chip)}
+.info{min-width:0;flex:1}.t{font-weight:600;overflow-wrap:anywhere;line-height:1.3}.m{font-size:12px;color:var(--muted);margin-top:2px}
+.dl{flex:none;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--accent-t);text-decoration:none;font-weight:600;padding:11px 15px;border-radius:13px;white-space:nowrap}
+.empty{text-align:center;color:var(--muted);padding:36px 8px}.empty b{display:block;font-size:34px;margin-bottom:6px}
+@media (max-width:380px){.item{flex-wrap:wrap}.dl{width:100%;text-align:center}}
+</style>
+</head>
+<body>
+<main>
+  <div class="top">
+    <div class="brand"><img class="logo" src="icons/logo.svg" alt=""><h1>LinkFire</h1></div>
+    <button class="theme" id="theme" aria-label="Alternar modo claro e escuro">🌙</button>
+  </div>
+  <p class="sub">Pesquise e baixe arquivos do MediaFire sem precisar procurar pela internet. Qualquer pessoa pode adicionar links.</p>
+  <div class="search"><span>🔎</span><input id="q" type="search" placeholder="Pesquisar arquivos…" autocomplete="off"></div>
+  <details class="card add" id="addBox">
+    <summary>➕ Adicionar um link</summary>
+    <div class="form">
+      <input id="url" type="url" placeholder="Cole o link do MediaFire">
+      <input id="title" type="text" placeholder="Nome do arquivo (opcional)" maxlength="120">
+      <button id="send">Publicar link</button>
+      <div class="msg" id="msg"></div>
+    </div>
+  </details>
+  <div class="bar" id="count"></div>
+  <div id="list"><div class="empty"><b>⏳</b>Carregando…</div></div>
+</main>
+
+<script type="module">
+import { firebaseConfig } from './config.js';
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
+import { getFirestore, collection, addDoc, query, orderBy, limit, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
+
+const $=id=>document.getElementById(id), root=document.documentElement;
+let rows=[], ready=false, col=null;
+
+/* tema */
+const sysDark=()=>matchMedia('(prefers-color-scheme: dark)').matches;
+const cur=()=>root.getAttribute('data-theme')||(sysDark()?'dark':'light');
+const paint=()=>$('theme').textContent=cur()==='dark'?'☀️':'🌙';
+try{const s=localStorage.getItem('lf-theme');if(s==='dark'||s==='light')root.setAttribute('data-theme',s)}catch(e){}
+$('theme').onclick=()=>{const n=cur()==='dark'?'light':'dark';root.setAttribute('data-theme',n);try{localStorage.setItem('lf-theme',n)}catch(e){}paint()};
+paint();
+
+const esc=s=>{const d=document.createElement('div');d.textContent=s;return d.innerHTML};
+const validMF=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)&&(x.hostname==='mediafire.com'||x.hostname.endsWith('.mediafire.com'))}catch(e){return false}};
+function nameFromUrl(u){try{const p=new URL(u).pathname.split('/').filter(Boolean),i=p.indexOf('file');return decodeURIComponent((i>=0&&p[i+2])?p[i+2]:(p[p.length-1]||'arquivo')).replace(/_/g,' ')}catch(e){return 'arquivo'}}
+function icon(n){const e=(n.split('.').pop()||'').toLowerCase();
+  if(/zip|rar|7z|tar|gz/.test(e))return '🗜️';if(/apk|xapk|exe|msi|dmg/.test(e))return '📦';
+  if(/mp4|mkv|avi|mov|webm/.test(e))return '🎬';if(/mp3|wav|flac|ogg|m4a/.test(e))return '🎵';
+  if(/png|jpe?g|gif|webp|svg/.test(e))return '🖼️';if(/pdf|docx?|txt|epub/.test(e))return '📄';
+  if(/jar|mcpack|mcaddon/.test(e))return '🧩';return '📁'}
+const say=(t,err)=>{const m=$('msg');m.textContent=t;m.className='msg'+(err?' err':'')};
+
+function render(){
+  const q=$('q').value.trim().toLowerCase(), box=$('list');
+  if(!col){box.innerHTML='<div class="empty"><b>⚙️</b>Falta configurar o Firebase. Abra o arquivo config.js e siga o LEIA-ME.</div>';$('count').textContent='';return}
+  if(!ready){box.innerHTML='<div class="empty"><b>⏳</b>Carregando…</div>';return}
+  const list=rows.filter(r=>!q||(r.title+' '+r.url).toLowerCase().includes(q));
+  $('count').textContent=list.length+(list.length===1?' arquivo':' arquivos');
+  if(!list.length){box.innerHTML='<div class="empty"><b>'+(rows.length?'🔍':'🌱')+'</b>'+(rows.length?'Nada encontrado para essa pesquisa.':'Ainda não há links. Seja o primeiro a adicionar!')+'</div>';return}
+  box.innerHTML=list.map(r=>{const d=r.createdAt?new Date(r.createdAt).toLocaleDateString('pt-BR'):'';
+    return '<div class="card item"><div class="ico">'+icon(r.title)+'</div><div class="info"><div class="t">'+esc(r.title)+'</div><div class="m">mediafire.com'+(d?' · '+d:'')+'</div></div><a class="dl" href="'+esc(r.url)+'" target="_blank" rel="noopener noreferrer">⬇ Baixar</a></div>'}).join('');
+}
+$('q').oninput=render;
+
+$('send').onclick=async()=>{
+  const u=$('url').value.trim(), t=$('title').value.trim();
+  if(!validMF(u)){say('Cole um link válido do MediaFire.',true);return}
+  if(!col){say('O app ainda não foi configurado.',true);return}
+  if(rows.some(r=>r.url===u)){say('Esse link já foi adicionado.',true);return}
+  $('send').disabled=true;
+  try{await addDoc(col,{url:u,title:(t||nameFromUrl(u)).slice(0,120),createdAt:Date.now()});
+    $('url').value='';$('title').value='';say('Link publicado! ✅');$('addBox').open=false}
+  catch(e){say('Erro ao publicar. Tente de novo.',true)}
+  $('send').disabled=false;
+};
+
+if(firebaseConfig.apiKey&&firebaseConfig.apiKey!=='COLE_AQUI'){
+  const db=getFirestore(initializeApp(firebaseConfig));
+  col=collection(db,'links');
+  onSnapshot(query(col,orderBy('createdAt','desc'),limit(500)),s=>{
+    rows=s.docs.map(d=>d.data()).filter(r=>r.url&&validMF(r.url));ready=true;render()
+  },()=>{ready=true;render()});
+}
+render();
+if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
+</script>
+</body>
+</html>
