@@ -60,6 +60,10 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
 .mt{color:var(--muted);font-size:13px}#rs-sum,#rs-my{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:8px 0}
 .cm{padding:10px 0;border-top:1px solid var(--line)}.cm p{margin:6px 0;white-space:pre-wrap;overflow-wrap:anywhere}.ch{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:14px}
 #rs-t{width:100%;min-height:70px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:inherit;resize:vertical}
+.item{cursor:pointer}.go{flex:none;font-size:26px;color:var(--muted);line-height:1}[dir=rtl] .go{transform:scaleX(-1)}
+.pdet{display:flex;gap:12px;align-items:center;margin-bottom:12px}.bigdl{display:block;text-align:center;padding:14px;font-size:16px;width:100%}
+.pc main{max-width:1100px}.pc #list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pc #list .card{margin:0}.pc #list .empty{grid-column:1/-1}
+.pc .chips{flex-wrap:wrap;overflow:visible}.pc .ov{align-items:center}.pc .sheet{border-radius:22px;max-width:640px}
 </style>
 </head>
 <body>
@@ -127,9 +131,13 @@ const M={"it":{"n":"Italiano","sub":"Cerca e scarica file da MediaFire senza cer
 Object.keys(M).forEach(l=>{L[l]=M[l]});
 const CB={pt:'Comentário bloqueado: conteúdo não permitido.',en:'Comment blocked: content not allowed.',es:'Comentario bloqueado: contenido no permitido.',fr:'Commentaire bloqué : contenu non autorisé.',de:'Kommentar blockiert: Inhalt nicht erlaubt.'};
 Object.keys(CB).forEach(l=>{L[l].cblk=CB[l]});
+const PCN={"pt":["Programas PC","Jogos PC","Windows e ISO","Utilitários PC"],"en":["PC Software","PC Games","Windows & ISO","PC Utilities"],"es":["Programas PC","Juegos PC","Windows e ISO","Utilidades PC"],"fr":["Logiciels PC","Jeux PC","Windows et ISO","Utilitaires PC"],"de":["PC-Programme","PC-Spiele","Windows & ISO","PC-Tools"],"it":["Programmi PC","Giochi PC","Windows e ISO","Utility PC"],"nl":["PC-software","PC-games","Windows & ISO","PC-hulpmiddelen"],"pl":["Programy PC","Gry PC","Windows i ISO","Narzędzia PC"],"tr":["PC Programları","PC Oyunları","Windows ve ISO","PC Araçları"],"ru":["Программы для ПК","Игры для ПК","Windows и ISO","Утилиты для ПК"],"ar":["برامج الكمبيوتر","ألعاب الكمبيوتر","ويندوز و ISO","أدوات الكمبيوتر"],"hi":["पीसी सॉफ़्टवेयर","पीसी गेम्स","विंडोज़ और ISO","पीसी यूटिलिटी"],"id":["Program PC","Game PC","Windows & ISO","Utilitas PC"],"vi":["Phần mềm PC","Game PC","Windows & ISO","Tiện ích PC"],"ja":["PCソフト","PCゲーム","Windows・ISO","PCユーティリティ"],"ko":["PC 프로그램","PC 게임","윈도우·ISO","PC 유틸리티"],"zh":["电脑软件","电脑游戏","Windows 和 ISO","电脑工具"]};
+Object.keys(PCN).forEach(l=>{const a=PCN[l];L[l].c_pcprog=a[0];L[l].c_pcjogos=a[1];L[l].c_pcsys=a[2];L[l].c_pcutil=a[3]});
 let lang='pt';try{const sl=localStorage.getItem('lf-lang');if(sl&&L[sl])lang=sl;else{const nl=(navigator.language||'pt').slice(0,2);if(L[nl])lang=nl}}catch(e){}
 const T=k=>(L[lang]&&L[lang][k])||L.pt[k]||k;
-const ICON={apk:'📦',jogos:'🎮',video:'🎬',musica:'🎵',mods:'🧩',docs:'📄',outros:'📁'},CK=['all','apk','jogos','video','musica','mods','docs','outros'];
+const ICON={apk:'📦',jogos:'🎮',video:'🎬',musica:'🎵',mods:'🧩',docs:'📄',outros:'📁',pcprog:'🖥️',pcjogos:'🕹️',pcsys:'💿',pcutil:'🧰'},CK0=['all','apk','jogos','video','musica','mods','docs','outros'],PCK=['pcprog','pcjogos','pcsys','pcutil'];
+const calcPC=()=>{try{return matchMedia('(hover:hover) and (pointer:fine)').matches&&innerWidth>=900}catch(e){return false}};
+let isPC=calcPC(),CK=isPC?CK0.concat(PCK):CK0.slice();root.classList.toggle('pc',isPC);
 const uid=()=>me?me.uid:null;
 /* tema */
 let pref='sys';try{const v=localStorage.getItem('lf-theme');if(v==='dark'||v==='light')pref=v}catch(e){}
@@ -141,6 +149,7 @@ const say=(t,err)=>{const m=$('msg');m.textContent=t;m.className='msg'+(err?' er
 const validMF=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)&&(x.hostname==='mediafire.com'||x.hostname.endsWith('.mediafire.com'))}catch(e){return false}};
 function nameFromUrl(u){try{const p=new URL(u).pathname.split('/').filter(Boolean),i=p.indexOf('file');return decodeURIComponent((i>=0&&p[i+2])?p[i+2]:(p[p.length-1]||'arquivo')).replace(/_/g,' ')}catch(e){return 'arquivo'}}
 function guess(n){const e=(n.split('.').pop()||'').toLowerCase();
+ if(/^(iso|img|wim|esd)$/.test(e))return 'pcsys';
  if(/apk|xapk|exe|msi|dmg/.test(e))return 'apk';if(/mp4|mkv|avi|mov|webm/.test(e))return 'video';if(/mp3|wav|flac|ogg|m4a/.test(e))return 'musica';
  if(/jar|mcpack|mcaddon|mrpack/.test(e))return 'mods';if(/pdf|docx?|txt|epub/.test(e))return 'docs';if(/game|jogo/i.test(n))return 'jogos';return 'outros'}
 const BAD=/\b(porn\w*|xxx|nsfw|hentai|onlyfans|nudes?|sexo|sex|sexy|erotic\w*|erotico|adult\w*|putaria|safada|pelada|keylogger|ransomware|stealer|trojan|botnet|ddos|hacktool)\b/i;
@@ -180,6 +189,7 @@ function render(){
  if(!ready){box.innerHTML='<div class="empty"><b>⏳</b></div>';return}
  const list=rows.filter(r=>{
   if((r.reports||0)>=3||blocked(r.title,r.url))return false;
+  if(!isPC&&PCK.includes(catOf(r)))return false;
   if(cat!=='all'&&catOf(r)!==cat)return false;
   if(v==='fav'&&!favs.includes(r.id))return false;
   if(v==='mine'&&(!uid()||r.uid!==uid()))return false;
@@ -188,17 +198,14 @@ function render(){
  $('count').textContent=list.length+' '+(list.length===1?T('f1'):T('fn'));
  if(!list.length){box.innerHTML='<div class="empty"><b>'+(rows.length?'🔍':'🌱')+'</b>'+(rows.length?T('none'):T('first'))+'</div>';return}
  box.innerHTML=list.map(r=>{
-  const c=catOf(r),d=r.createdAt?new Date(r.createdAt).toLocaleDateString(lang):'',f=favs.includes(r.id),
-  del=(uid()&&r.uid===uid())?'<button class="mini" data-a="edit" data-id="'+r.id+'">'+T('edit')+'</button><button class="mini" data-a="del" data-id="'+r.id+'">'+T('del')+'</button>':'';
-  return '<div class="card item"><div class="ico'+(r.img?' has':'')+'">'+(r.img?'<img class="ci" alt="" src="'+esc(r.img)+'">':ICON[c])+'</div><div class="info"><div class="t">'+esc(r.title)+'</div><div class="m">'+T('c_'+c)+' · ⬇ '+(r.downloads||0)+(d?' · '+d:'')+'</div>'+starsLine(r.id)+((r.nick||r.photo)?'<div class="pub">'+(r.photo?'<img class="pa" alt="" referrerpolicy="no-referrer" src="'+esc(r.photo)+'">':'')+esc(r.nick||'')+'</div>':'')+
-  '<div class="acts"><button class="mini" data-a="rate" data-id="'+r.id+'">'+T('rate')+'</button><button class="mini" data-a="fav" data-id="'+r.id+'">'+(f?T('faved'):T('fav'))+'</button><button class="mini" data-a="copy" data-id="'+r.id+'">'+T('copy')+'</button><button class="mini" data-a="rep" data-id="'+r.id+'">'+T('rep')+'</button>'+del+'</div></div>'+
-  '<a class="dl" data-a="dl" data-id="'+r.id+'" href="'+esc(r.url)+'" target="_blank" rel="noopener noreferrer">'+T('dl')+'</a></div>'}).join('')}
+  const c=catOf(r),d=r.createdAt?new Date(r.createdAt).toLocaleDateString(lang):'';
+  return '<div class="card item" data-id="'+r.id+'" role="button" tabindex="0"><div class="ico'+(r.img?' has':'')+'">'+(r.img?'<img class="ci" alt="" src="'+esc(r.img)+'">':ICON[c])+'</div><div class="info"><div class="t">'+esc(r.title)+'</div><div class="m">'+T('c_'+c)+' · ⬇ '+(r.downloads||0)+(d?' · '+d:'')+'</div>'+starsLine(r.id)+pubLine(r)+'</div><span class="go">›</span></div>'}).join('')}
 $('chips').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;cat=b.dataset.c;document.querySelectorAll('.chip').forEach(c=>c.classList.toggle('on',c===b));render()};
 
 let limgData=null;
 const shrink=(f,n)=>new Promise(res=>{const im=new Image(),u=URL.createObjectURL(f);im.onload=()=>{const s=Math.min(im.width,im.height),c=document.createElement('canvas');c.width=c.height=n;c.getContext('2d').drawImage(im,(im.width-s)/2,(im.height-s)/2,s,s,0,0,n,n);URL.revokeObjectURL(u);res(c.toDataURL('image/jpeg',.7))};im.onerror=()=>res(null);im.src=u});
 $('limg').onchange=async function(){const f=this.files&&this.files[0];if(!f)return;limgData=await shrink(f,128);const p=$('lprev');if(limgData){p.src=limgData;p.hidden=false}};
-const sh=h=>{$('sh2').innerHTML=h;$('ov2').classList.add('on')};
+const sh=h=>{if(offC){offC();offC=null}curR=null;drag=false;$('sh2').innerHTML=h;$('ov2').classList.add('on')};
 const shClose=()=>{if(offC){offC();offC=null}curR=null;drag=false;$('ov2').classList.remove('on')};
 $('ov2').onclick=e=>{if(e.target===$('ov2'))shClose()};
 function openReport(r){
@@ -243,9 +250,29 @@ function drawRate(){
   return '<div class="cm"><div class="ch">'+ph+'<b>'+esc(c.nome||'')+'</b>'+(n?starsEl(n,'sm'):'')+'<span class="mt">'+d+'</span></div><p>'+esc(c.texto||'')+'</p>'+((me&&c.uid===me.uid)?'<button class="mini" data-cd="'+esc(c.id)+'">'+T('del')+'</button>':'')+'</div>'}).join(''):'<div class="mt" style="padding:10px 0">'+T('nocomm')+'</div>';
  $('rs-l').querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>deleteDoc(doc(db,'comments',b.dataset.cd)).catch(()=>toast(T('err'))));
 }
-function openRate(r){
+const pubLine=r=>(r.nick||r.photo)?'<div class="pub">'+(r.photo?'<img class="pa" alt="" referrerpolicy="no-referrer" src="'+esc(r.photo)+'">':'')+esc(r.nick||'')+'</div>':'';
+async function act(a,r){
+ if(!r||!db)return;
+ try{
+  if(a==='dl'){await updateDoc(doc(db,'links',r.id),{downloads:increment(1)})}
+  else if(a==='copy'){try{await navigator.clipboard.writeText(r.url)}catch(x){const t=document.createElement('textarea');t.value=r.url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}toast(T('copied'))}
+  else if(a==='rep'){openReport(r)}
+  else if(a==='edit'){openEdit(r)}
+  else if(a==='del'){if(!confirm(T('qdel')))return;await deleteDoc(doc(db,'links',r.id));shClose();toast(T('dels'))}
+  else if(a==='fav'){if(!me){toast(T('nologin'));return}
+   favs=favs.includes(r.id)?favs.filter(x=>x!==r.id):favs.concat(r.id);render();
+   const fb=$('pf');if(fb)fb.textContent=favs.includes(r.id)?T('faved'):T('fav');
+   await setDoc(doc(db,'users',me.uid),{favs},{merge:true})}
+ }catch(x){toast(T('err'))}
+}
+function openPost(r){
  if(!db)return;
- sh('<h2><span>'+esc(r.title)+'</span><button class="sq" id="rx" style="width:38px;height:38px;font-size:16px">✕</button></h2><div id="rs-sum"></div><div id="rs-my"></div><h3>'+T('comm')+'</h3><textarea id="rs-t" maxlength="500" placeholder="'+esc(T('writec'))+'"></textarea><button id="rs-s" class="opt" style="margin-top:8px;text-align:center">'+T('sendc')+'</button><div id="rs-l"></div>');
+ const c=catOf(r),d=r.createdAt?new Date(r.createdAt).toLocaleDateString(lang):'',mine=uid()&&r.uid===uid(),f=favs.includes(r.id);
+ sh('<h2><span style="overflow-wrap:anywhere">'+esc(r.title)+'</span><button class="sq" id="rx" style="width:38px;height:38px;font-size:16px;flex:none">✕</button></h2>'
+ +'<div class="pdet"><div class="ico'+(r.img?' has':'')+'">'+(r.img?'<img class="ci" alt="" src="'+esc(r.img)+'">':ICON[c])+'</div><div class="info"><div class="m" style="margin:0">'+T('c_'+c)+' · ⬇ '+(r.downloads||0)+(d?' · '+d:'')+'</div>'+pubLine(r)+'</div></div>'
+ +'<a class="dl bigdl" data-a="dl" href="'+esc(r.url)+'" target="_blank" rel="noopener noreferrer">'+T('dl')+'</a>'
+ +'<div class="acts" style="margin-top:10px"><button class="mini" id="pf" data-a="fav">'+(f?T('faved'):T('fav'))+'</button><button class="mini" data-a="copy">'+T('copy')+'</button><button class="mini" data-a="rep">'+T('rep')+'</button>'+(mine?'<button class="mini" data-a="edit">'+T('edit')+'</button><button class="mini" data-a="del">'+T('del')+'</button>':'')+'</div>'
+ +'<div id="rs-sum"></div><div id="rs-my"></div><h3>'+T('comm')+'</h3><textarea id="rs-t" maxlength="500" placeholder="'+esc(T('writec'))+'"></textarea><button id="rs-s" class="opt" style="margin-top:8px;text-align:center">'+T('sendc')+'</button><div id="rs-l"></div>');
  curR=r;cm=[];drag=false;
  $('rx').onclick=shClose;
  $('rs-s').onclick=async()=>{
@@ -256,23 +283,11 @@ function openRate(r){
   try{await addDoc(collection(db,'comments'),{linkId:r.id,uid:me.uid,nome:dispName()||'?',photo:prof.photo||me.photoURL||null,texto:t,createdAt:Date.now()});$('rs-t').value=''}
   catch(e){toast(T('err'))}
   b.disabled=false};
- if(offC){offC();offC=null}
  offC=onSnapshot(query(collection(db,'comments'),where('linkId','==',r.id),limit(200)),s=>{cm=s.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));drawRate()},()=>{});
  drawRate()}
-$('list').addEventListener('click',async e=>{
- const b=e.target.closest('[data-a]');if(!b)return;const r=rows.find(x=>x.id===b.dataset.id),a=b.dataset.a;if(!r||!db)return;
- try{
-  if(a==='dl'){await updateDoc(doc(db,'links',r.id),{downloads:increment(1)})}
-  else if(a==='copy'){try{await navigator.clipboard.writeText(r.url)}catch(x){const t=document.createElement('textarea');t.value=r.url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}toast(T('copied'))}
-  else if(a==='rep'){openReport(r)}
-  else if(a==='rate'){openRate(r)}
-  else if(a==='edit'){openEdit(r)}
-  else if(a==='del'){if(!confirm(T('qdel')))return;await deleteDoc(doc(db,'links',r.id));toast(T('dels'))}
-  else if(a==='fav'){if(!me){toast(T('nologin'));return}
-   favs=favs.includes(r.id)?favs.filter(x=>x!==r.id):favs.concat(r.id);render();
-   await setDoc(doc(db,'users',me.uid),{favs},{merge:true})}
- }catch(x){toast(T('err'))}
-});
+$('sh2').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(b&&curR)act(b.dataset.a,curR)});
+$('list').addEventListener('click',e=>{const it=e.target.closest('.item');if(!it)return;const r=rows.find(x=>x.id===it.dataset.id);if(r)openPost(r)});
+$('list').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const it=e.target.closest('.item');if(!it)return;const r=rows.find(x=>x.id===it.dataset.id);if(r)openPost(r)});
 $('q').oninput=render;$('sort').onchange=render;$('view').onchange=render;
 $('send').onclick=async()=>{
  const u=$('url').value.trim(),t=$('title').value.trim();
@@ -283,7 +298,7 @@ $('send').onclick=async()=>{
  if(!col){say(T('cfg'),true);return}
  if(rows.some(r=>r.url===u)){say(T('dup'),true);return}
  const title=(t||nameFromUrl(u)).slice(0,120);if(blocked(title,u)){say(T('blk'),true);return}
- let c=$('cat').value;if(c==='auto')c=guess(title);
+ let c=$('cat').value;if(c==='auto')c=guess(title);if(!isPC&&PCK.includes(c))c='outros';
  $('send').disabled=true;
  try{await addDoc(col,{url:u,title,cat:c,downloads:0,reports:0,uid:uid(),nick:dispName()||null,photo:prof.photo||(me&&me.photoURL)||null,img:limgData||null,createdAt:Date.now()});
   $('url').value='';$('title').value='';limgData=null;$('limg').value='';$('lprev').hidden=true;say(T('ok'));$('addBox').open=false}
@@ -305,6 +320,10 @@ $('savep').onclick=async()=>{
  prof.nick=$('nick').value.trim().slice(0,24);
  try{await setDoc(doc(db,'users',me.uid),{nick:prof.nick,photo:prof.photo||null},{merge:true});rows.filter(x=>x.uid===me.uid).forEach(x=>updateDoc(doc(db,'links',x.id),{nick:prof.nick||null,photo:prof.photo||(me.photoURL)||null}).catch(()=>{}));$('pmsg').textContent=T('psaved');greet();avatar()}
  catch(e){$('pmsg').textContent=T('err')}};
+/* modo computador / celular */
+let rzT=null;
+function setMode(){const n=calcPC();if(n===isPC)return;isPC=n;root.classList.toggle('pc',n);CK=n?CK0.concat(PCK):CK0.slice();if(!n&&PCK.includes(cat))cat='all';shClose();applyLang()}
+addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(setMode,200)});
 /* iniciar */
 applyLang();
 if(firebaseConfig.apiKey&&firebaseConfig.apiKey!=='COLE_AQUI'){
