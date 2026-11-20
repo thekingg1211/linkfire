@@ -51,7 +51,7 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
 .pf>div{flex:1;display:grid;gap:8px}.ghost{background:var(--chip);color:var(--text)}
 @media (max-width:420px){.item{flex-wrap:wrap}.dl{width:100%;text-align:center}}
 .logo{width:44px;height:44px;border-radius:13px;box-shadow:0 6px 18px rgba(80,90,255,.35)}
-.pa{width:18px;height:18px;border-radius:50%;object-fit:cover;margin-right:6px}.pub{display:flex;align-items:center;font-size:12.5px;margin-top:4px}.otag{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f5a623,#ff6b35);vertical-align:middle;white-space:nowrap}.opt{width:100%;margin-top:8px;text-align:left}.sheet textarea,.sheet .fld{margin-top:8px}
+.pa{width:18px;height:18px;border-radius:50%;object-fit:cover;margin-right:6px}.pub{display:flex;align-items:center;font-size:12.5px;margin-top:4px}.or{text-align:center;color:var(--muted);font-size:12px;margin:12px 0 2px}.erow{display:flex;gap:8px;margin-top:8px}.erow button{flex:1}.otag{display:inline-flex;align-items:center;gap:3px;margin-left:6px;padding:1px 8px;border-radius:999px;font-size:11px;font-weight:700;color:#fff;background:linear-gradient(135deg,#f5a623,#ff6b35);vertical-align:middle;white-space:nowrap}.opt{width:100%;margin-top:8px;text-align:left}.sheet textarea,.sheet .fld{margin-top:8px}
 .ico{overflow:hidden}.ico.has{width:64px;height:64px}.ci{width:100%;height:100%;object-fit:cover}#lprev{width:72px;height:72px;border-radius:12px;object-fit:cover}
 .gbtn{width:100%;background:#fff;color:#222;border:1px solid var(--line)}.who{font-size:14px;color:var(--muted);margin-bottom:8px;overflow-wrap:anywhere}
 .stars{display:inline-block;font-size:22px;letter-spacing:2px;line-height:1;background:linear-gradient(90deg,#f5b301 var(--p,0%),#aab3c8 var(--p,0%));-webkit-background-clip:text;background-clip:text;color:transparent;user-select:none;-webkit-user-select:none;vertical-align:middle}
@@ -100,7 +100,7 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
 import { firebaseConfig } from './config.js';
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js';
 import { getFirestore, collection, addDoc, doc, getDoc, setDoc, updateDoc, deleteDoc, increment, query, orderBy, limit, where, onSnapshot } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js';
-import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
+import { getAuth, GoogleAuthProvider, signInWithPopup, signInWithRedirect, signOut, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from 'https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js';
 
 const $=id=>document.getElementById(id), root=document.documentElement;
 let db=null,auth=null,col=null,me=null,rows=[],favs=[],prof={},ready=false,cat='all';
@@ -137,7 +137,12 @@ Object.assign(L.pt,{owner:'Dono'});Object.assign(L.en,{owner:'Owner'});Object.as
 const PCN={"pt":["Programas PC","Jogos PC","Windows e ISO","Utilitários PC"],"en":["PC Software","PC Games","Windows & ISO","PC Utilities"],"es":["Programas PC","Juegos PC","Windows e ISO","Utilidades PC"],"fr":["Logiciels PC","Jeux PC","Windows et ISO","Utilitaires PC"],"de":["PC-Programme","PC-Spiele","Windows & ISO","PC-Tools"],"it":["Programmi PC","Giochi PC","Windows e ISO","Utility PC"],"nl":["PC-software","PC-games","Windows & ISO","PC-hulpmiddelen"],"pl":["Programy PC","Gry PC","Windows i ISO","Narzędzia PC"],"tr":["PC Programları","PC Oyunları","Windows ve ISO","PC Araçları"],"ru":["Программы для ПК","Игры для ПК","Windows и ISO","Утилиты для ПК"],"ar":["برامج الكمبيوتر","ألعاب الكمبيوتر","ويندوز و ISO","أدوات الكمبيوتر"],"hi":["पीसी सॉफ़्टवेयर","पीसी गेम्स","विंडोज़ और ISO","पीसी यूटिलिटी"],"id":["Program PC","Game PC","Windows & ISO","Utilitas PC"],"vi":["Phần mềm PC","Game PC","Windows & ISO","Tiện ích PC"],"ja":["PCソフト","PCゲーム","Windows・ISO","PCユーティリティ"],"ko":["PC 프로그램","PC 게임","윈도우·ISO","PC 유틸리티"],"zh":["电脑软件","电脑游戏","Windows 和 ISO","电脑工具"]};
 Object.keys(PCN).forEach(l=>{const a=PCN[l];L[l].c_pcprog=a[0];L[l].c_pcjogos=a[1];L[l].c_pcsys=a[2];L[l].c_pcutil=a[3]});
 Object.assign(L.pt,{c_pcsys:'Sistemas'});Object.assign(L.en,{c_pcsys:'Systems'});Object.assign(L.es,{c_pcsys:'Sistemas'});Object.assign(L.fr,{c_pcsys:'Systèmes'});Object.assign(L.de,{c_pcsys:'Systeme'});
-Object.keys(L).forEach(l=>{['owner','osq','dlogin'].forEach(k=>{if(!L[l][k])L[l][k]=L.en[k]})});
+Object.assign(L.pt,{eor:'ou',eph:'E-mail',epw:'Senha',ein:'Entrar',eup:'Criar conta',efg:'Esqueci a senha',ex_mail:'Digite um e-mail válido.',ex_weak:'Senha fraca: use pelo menos 6 caracteres.',ex_used:'Esse e-mail já tem conta. Toque em Entrar.',ex_cred:'E-mail ou senha incorretos.',ex_many:'Muitas tentativas. Espere um pouco.',ex_off:'O login por e-mail ainda não está ativado.',ex_fill:'Preencha e-mail e senha.',ex_sent:'Enviamos um e-mail para redefinir a senha.',anon:'Usuário'});
+Object.assign(L.en,{eor:'or',eph:'Email',epw:'Password',ein:'Sign in',eup:'Create account',efg:'Forgot password',ex_mail:'Enter a valid email.',ex_weak:'Weak password: use at least 6 characters.',ex_used:'This email already has an account. Tap Sign in.',ex_cred:'Wrong email or password.',ex_many:'Too many attempts. Wait a moment.',ex_off:'Email sign-in is not enabled yet.',ex_fill:'Fill in email and password.',ex_sent:'We sent an email to reset your password.',anon:'User'});
+Object.assign(L.es,{eor:'o',eph:'Correo',epw:'Contraseña',ein:'Entrar',eup:'Crear cuenta',efg:'Olvidé mi contraseña',ex_mail:'Escribe un correo válido.',ex_weak:'Contraseña débil: usa al menos 6 caracteres.',ex_used:'Este correo ya tiene cuenta. Toca Entrar.',ex_cred:'Correo o contraseña incorrectos.',ex_many:'Demasiados intentos. Espera un poco.',ex_off:'El acceso por correo aún no está activado.',ex_fill:'Rellena correo y contraseña.',ex_sent:'Te enviamos un correo para restablecer la contraseña.',anon:'Usuario'});
+Object.assign(L.fr,{eor:'ou',eph:'E-mail',epw:'Mot de passe',ein:'Se connecter',eup:'Créer un compte',efg:'Mot de passe oublié',ex_mail:'Saisissez un e-mail valide.',ex_weak:'Mot de passe faible : au moins 6 caractères.',ex_used:'Cet e-mail a déjà un compte. Touchez Se connecter.',ex_cred:'E-mail ou mot de passe incorrect.',ex_many:'Trop de tentatives. Patientez un peu.',ex_off:'La connexion par e-mail n’est pas encore activée.',ex_fill:'Renseignez l’e-mail et le mot de passe.',ex_sent:'Nous avons envoyé un e-mail pour réinitialiser le mot de passe.',anon:'Utilisateur'});
+Object.assign(L.de,{eor:'oder',eph:'E-Mail',epw:'Passwort',ein:'Anmelden',eup:'Konto erstellen',efg:'Passwort vergessen',ex_mail:'Gib eine gültige E-Mail ein.',ex_weak:'Schwaches Passwort: mindestens 6 Zeichen.',ex_used:'Diese E-Mail hat schon ein Konto. Tippe auf Anmelden.',ex_cred:'E-Mail oder Passwort falsch.',ex_many:'Zu viele Versuche. Bitte kurz warten.',ex_off:'Die Anmeldung per E-Mail ist noch nicht aktiviert.',ex_fill:'E-Mail und Passwort eingeben.',ex_sent:'Wir haben eine E-Mail zum Zurücksetzen gesendet.',anon:'Nutzer'});
+Object.keys(L).forEach(l=>{['owner','osq','dlogin','eor','eph','epw','ein','eup','efg','ex_mail','ex_weak','ex_used','ex_cred','ex_many','ex_off','ex_fill','ex_sent','anon'].forEach(k=>{if(!L[l][k])L[l][k]=L.en[k]})});
 let lang='pt';try{const sl=localStorage.getItem('lf-lang');if(sl&&L[sl])lang=sl;else{const nl=(navigator.language||'pt').slice(0,2);if(L[nl])lang=nl}}catch(e){}
 const T=k=>(L[lang]&&L[lang][k])||L.pt[k]||k;
 const ICON={apk:'📦',jogos:'🎮',video:'🎬',musica:'🎵',mods:'🧩',docs:'📄',outros:'📁',pcprog:'🖥️',pcjogos:'🕹️',pcsys:'💿',pcutil:'🧰'},CK0=['all','apk','jogos','video','musica','mods','docs','pcsys','outros'],PCK=['pcprog','pcjogos','pcutil'];
@@ -203,7 +208,24 @@ function greet(){const h=$('hello'),n=dispName();if(me&&n){h.hidden=false;h.text
 function avatar(){const src=prof.photo||(me&&me.photoURL)||'';const h=src?'<img alt="" referrerpolicy="no-referrer" src="'+esc(src)+'">':'👤';$('acc').innerHTML=h;$('big').innerHTML=h}
 function authUI(){const a=$('auth');
  if(me){a.innerHTML='<div class="who">'+esc(T('who').replace('{n}',me.email||dispName()))+tag(me.uid)+'</div><button class="ghost" id="outb" style="width:100%">'+T('out')+'</button>';$('outb').onclick=()=>signOut(auth)}
- else{a.innerHTML='<button class="gbtn" id="glb">'+T('gl')+'</button>';$('glb').onclick=login}}
+ else{a.innerHTML='<button class="gbtn" id="glb">'+T('gl')+'</button><div class="or">'+T('eor')+'</div><input id="em" class="fld" type="email" autocomplete="email" autocapitalize="none" placeholder="'+esc(T('eph'))+'"><input id="pw" class="fld" type="password" autocomplete="current-password" placeholder="'+esc(T('epw'))+'"><div class="erow"><button class="ghost" id="emin">'+T('ein')+'</button><button class="ghost" id="emup">'+T('eup')+'</button></div><button class="mini" id="emfg" style="margin-top:8px">'+T('efg')+'</button><div class="msg err" id="amsg"></div>';
+  $('glb').onclick=login;$('emin').onclick=()=>emailAuth('in');$('emup').onclick=()=>emailAuth('up');$('emfg').onclick=resetPw;$('pw').onkeydown=e=>{if(e.key==='Enter')emailAuth('in')}}}
+const authErr=e=>{const c=(e&&e.code)||'';
+ if(c==='auth/invalid-email')return T('ex_mail');if(c==='auth/weak-password')return T('ex_weak');if(c==='auth/email-already-in-use')return T('ex_used');
+ if(c==='auth/invalid-credential'||c==='auth/wrong-password'||c==='auth/user-not-found'||c==='auth/invalid-login-credentials')return T('ex_cred');
+ if(c==='auth/too-many-requests')return T('ex_many');if(c==='auth/operation-not-allowed')return T('ex_off');return T('lerr')};
+async function emailAuth(mode){
+ if(!auth){toast(T('cfg'));return}
+ const em=$('em').value.trim(),pw=$('pw').value,m=$('amsg');m.textContent='';
+ if(!em||!pw){m.textContent=T('ex_fill');return}
+ if(mode==='up'&&pw.length<6){m.textContent=T('ex_weak');return}
+ try{if(mode==='up')await createUserWithEmailAndPassword(auth,em,pw);else await signInWithEmailAndPassword(auth,em,pw)}
+ catch(e){m.textContent=authErr(e)}}
+async function resetPw(){
+ if(!auth){toast(T('cfg'));return}
+ const em=$('em').value.trim(),m=$('amsg');m.textContent='';
+ if(!em){m.textContent=T('ex_mail');return}
+ try{await sendPasswordResetEmail(auth,em);m.textContent=T('ex_sent')}catch(e){m.textContent=authErr(e)}}
 async function login(){if(!auth){toast(T('cfg'));return}
  const p=new GoogleAuthProvider();
  try{await signInWithPopup(auth,p)}catch(e){
@@ -311,7 +333,7 @@ function openPost(r){
   const t=$('rs-t').value.trim().slice(0,500);if(!t)return;
   if(blocked(t,'')){toast(T('cblk'));return}
   const b=$('rs-s');b.disabled=true;
-  try{await addDoc(collection(db,'comments'),{linkId:r.id,uid:me.uid,nome:dispName()||'?',photo:prof.photo||me.photoURL||null,texto:t,createdAt:Date.now()});$('rs-t').value=''}
+  try{await addDoc(collection(db,'comments'),{linkId:r.id,uid:me.uid,nome:dispName()||T('anon'),photo:prof.photo||me.photoURL||null,texto:t,createdAt:Date.now()});$('rs-t').value=''}
   catch(e){toast(T('err'))}
   b.disabled=false};
  offC=onSnapshot(query(collection(db,'comments'),where('linkId','==',r.id),limit(200)),s=>{cm=s.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));drawRate()},()=>{});
