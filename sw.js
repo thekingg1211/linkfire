@@ -1,6 +1,6 @@
 // LinkFire service worker: busca sempre a versão nova primeiro (rede),
 // e só usa a cópia guardada quando estiver sem internet.
-const CACHE = 'linkfire-v3';
+const CACHE = 'linkfire-v4';
 
 self.addEventListener('install', (e) => {
   self.skipWaiting();
