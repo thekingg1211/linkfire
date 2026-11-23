@@ -13,7 +13,7 @@
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0b0e15;--bg2:#161d3d;--card:#161b27;--text:#eef1f8;--muted:#9aa4bb;--line:#252c3d;--accent:#5b8cff;--accent2:#a37bff;--shadow:0 8px 28px rgba(0,0,0,.45);--chip:#1d2540;color-scheme:dark}}
 :root[data-theme="dark"]{--bg:#0b0e15;--bg2:#161d3d;--card:#161b27;--text:#eef1f8;--muted:#9aa4bb;--line:#252c3d;--accent:#5b8cff;--accent2:#a37bff;--shadow:0 8px 28px rgba(0,0,0,.45);--chip:#1d2540;color-scheme:dark}
 *{box-sizing:border-box}html{scroll-padding-top:env(safe-area-inset-top,0px)}
-body{margin:0;min-height:100vh;background:var(--bg) radial-gradient(900px 340px at 50% -80px,var(--bg2),transparent) no-repeat;color:var(--text);font:16px/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+body{margin:0;min-height:100vh;background:var(--bg) radial-gradient(900px 340px at 50% -80px,var(--bg2),transparent) no-repeat;color:var(--text);font:calc(16px*var(--fs,1))/1.45 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
 main{max-width:720px;margin:0 auto;padding:16px 16px 48px}
 .top{display:flex;align-items:center;justify-content:space-between;gap:10px}
 .brand{display:flex;align-items:center;gap:10px}h1{font-size:24px;margin:0;letter-spacing:-.4px}
@@ -64,6 +64,10 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
 .pdet{display:flex;gap:12px;align-items:center;margin-bottom:12px}.bigdl{display:block;text-align:center;padding:14px;font-size:16px;width:100%}
 .pc main{max-width:1100px}.pc #list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.pc #list .card{margin:0}.pc #list .empty{grid-column:1/-1}
 .pc .chips{flex-wrap:wrap;overflow:visible}.pc .ov{align-items:center}.pc .sheet{border-radius:22px;max-width:640px}
+.ban{background:color-mix(in srgb,var(--bad) 14%,var(--card));border:1px solid var(--bad);overflow-wrap:anywhere}
+.rl,.gd ol{padding-left:20px;margin:8px 0 12px}.rl li,.gd li{margin:6px 0}
+.bn{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:8px 0;border-top:1px solid var(--line);font-size:13px}.bn small{display:block;color:var(--muted);overflow-wrap:anywhere}
+.fld2{margin-top:8px}.ftr{display:flex;gap:8px;justify-content:center;margin-top:18px}
 </style>
 </head>
 <body>
@@ -75,6 +79,7 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
  <p class="sub" data-i="sub"></p>
  <p class="hello" data-i="warn" style="margin-top:-6px"></p>
  <div class="hello" id="hello" hidden></div>
+ <div class="hello ban" id="banbar" hidden></div>
  <div class="search"><span>🔎</span><input id="q" type="search" data-ph="search" autocomplete="off"></div>
  <div class="chips" id="chips"></div><div id="osbar" hidden></div>
  <div class="row"><select id="sort"></select><select id="view"></select></div>
@@ -84,6 +89,7 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
  </details>
  <div class="bar" id="count"></div>
  <div id="list"><div class="empty"><b>⏳</b></div></div>
+ <div class="ftr"><button class="mini ghost" data-x="rules" data-i="rules"></button><button class="mini ghost" data-x="help" data-i="help"></button></div>
 </main>
 <div class="ov" id="ov"><div class="sheet">
  <h2><span data-i="set"></span><button class="sq" id="x" style="width:38px;height:38px;font-size:16px">✕</button></h2>
@@ -93,6 +99,9 @@ details.add summary{cursor:pointer;font-weight:600;list-style:none}details.add s
  <button id="savep" style="width:100%;margin-top:12px" data-i="savep"></button><div class="msg" id="pmsg"></div>
  <h3 data-i="theme"></h3><select id="th"></select>
  <h3 data-i="lang"></h3><select id="lg"></select>
+ <h3 data-i="look"></h3><select id="ac"></select><select id="fs" class="fld2"></select>
+ <h3 data-i="more"></h3><div class="erow"><button class="ghost" data-x="rules" data-i="rules"></button><button class="ghost" data-x="help" data-i="help"></button></div>
+ <div id="ownp"></div>
 </div></div>
 <div class="ov" id="ov2"><div class="sheet" id="sh2"></div></div>
 <div class="toast" id="toast"></div>
@@ -143,6 +152,8 @@ Object.assign(L.es,{eor:'o',eph:'Correo',epw:'Contraseña',ein:'Entrar',eup:'Cre
 Object.assign(L.fr,{eor:'ou',eph:'E-mail',epw:'Mot de passe',ein:'Se connecter',eup:'Créer un compte',efg:'Mot de passe oublié',ex_mail:'Saisissez un e-mail valide.',ex_weak:'Mot de passe faible : au moins 6 caractères.',ex_used:'Cet e-mail a déjà un compte. Touchez Se connecter.',ex_cred:'E-mail ou mot de passe incorrect.',ex_many:'Trop de tentatives. Patientez un peu.',ex_off:'La connexion par e-mail n’est pas encore activée.',ex_fill:'Renseignez l’e-mail et le mot de passe.',ex_sent:'Nous avons envoyé un e-mail pour réinitialiser le mot de passe.',anon:'Utilisateur'});
 Object.assign(L.de,{eor:'oder',eph:'E-Mail',epw:'Passwort',ein:'Anmelden',eup:'Konto erstellen',efg:'Passwort vergessen',ex_mail:'Gib eine gültige E-Mail ein.',ex_weak:'Schwaches Passwort: mindestens 6 Zeichen.',ex_used:'Diese E-Mail hat schon ein Konto. Tippe auf Anmelden.',ex_cred:'E-Mail oder Passwort falsch.',ex_many:'Zu viele Versuche. Bitte kurz warten.',ex_off:'Die Anmeldung per E-Mail ist noch nicht aktiviert.',ex_fill:'E-Mail und Passwort eingeben.',ex_sent:'Wir haben eine E-Mail zum Zurücksetzen gesendet.',anon:'Nutzer'});
 Object.keys(L).forEach(l=>{['owner','osq','dlogin','eor','eph','epw','ein','eup','efg','ex_mail','ex_weak','ex_used','ex_cred','ex_many','ex_off','ex_fill','ex_sent','anon'].forEach(k=>{if(!L[l][k])L[l][k]=L.en[k]})});
+const BX={"pt": {"rules": "📜 Regras", "help": "📖 Tutorial", "look": "Aparência", "more": "Ajuda", "ac_blue": "🔵 Azul", "ac_green": "🟢 Verde", "ac_red": "🔴 Vermelho", "ac_pink": "🌸 Rosa", "ac_orange": "🟠 Laranja", "fs1": "Texto normal", "fs2": "Texto grande", "fs3": "Texto muito grande", "rulesT": "Regras do LinkFire", "accept": "Li e aceito as regras", "ru1": "Proibido postar vírus, malware ou links que enganem (golpe/phishing).", "ru2": "Proibido conteúdo +18, ilegal ou que incentive violência.", "ru3": "Não poste link repetido, quebrado ou com título enganoso.", "ru4": "Só links do MediaFire são aceitos.", "ru5": "Respeito nos comentários: sem ofensa, spam ou assédio.", "ru6": "Se o dono dos direitos de um arquivo pedir a remoção, o link será apagado.", "ru7": "Quem quebrar as regras pode ter posts removidos ou ser banido (por um tempo ou para sempre). O motivo aparece na conta de quem foi banido.", "hdl": "Como baixar um arquivo", "gd1": "Entre na sua conta (é preciso estar logado para baixar).", "gd2": "Toque no arquivo que você quer na lista.", "gd3": "Toque em ⬇ Baixar. A página do MediaFire vai abrir.", "gd4": "No MediaFire, toque no botão de download (geralmente verde) e espere terminar. Se aparecer anúncio, feche e continue.", "gd5": "Se for APK, o Android pode pedir para permitir instalar de fontes desconhecidas. Só instale o que você confia.", "hcr": "Como criar um link no MediaFire", "gc1": "Crie uma conta grátis em mediafire.com (ou no app MediaFire).", "gc2": "Toque em Upload ou no botão + e escolha o arquivo do seu celular.", "gc3": "Espere o envio terminar. O arquivo aparece em Meus arquivos (My Files).", "gc4": "Toque nos três pontinhos ⋮ do arquivo, escolha Compartilhar (Share) ou Obter link e depois Copiar link. Os nomes podem variar um pouco.", "gc5": "Volte ao LinkFire, toque em Adicionar um link e cole o link. Ele precisa ser de mediafire.com.", "gc6": "Dê um nome claro ao arquivo e escolha a categoria. Não envie vírus nem conteúdo proibido (veja as regras).", "ban": "Banir", "banu": "Banir usuário", "d1": "1 dia", "d3": "3 dias", "w1": "1 semana", "m1": "1 mês", "perm": "Permanente", "cust": "Personalizado…", "hours": "horas", "days": "dias", "reasonph": "Motivo do ban (o usuário vai ver)", "needr": "Escreva o motivo do ban.", "doban": "Aplicar ban", "bnok": "Usuário banido ✅", "bans": "Usuários banidos", "nobans": "Nenhum ban ativo.", "unban": "Desbanir", "bantxt": "Você está banido", "until": "até", "permt": "permanentemente", "left": "falta", "why": "Motivo"}, "en": {"rules": "📜 Rules", "help": "📖 Tutorial", "look": "Appearance", "more": "Help", "ac_blue": "🔵 Blue", "ac_green": "🟢 Green", "ac_red": "🔴 Red", "ac_pink": "🌸 Pink", "ac_orange": "🟠 Orange", "fs1": "Normal text", "fs2": "Large text", "fs3": "Extra large text", "rulesT": "LinkFire rules", "accept": "I read and accept the rules", "ru1": "No viruses, malware or deceptive links (scams/phishing).", "ru2": "No adult (+18), illegal or violence-inciting content.", "ru3": "Do not post duplicate, broken or misleadingly titled links.", "ru4": "Only MediaFire links are accepted.", "ru5": "Be respectful in comments: no insults, spam or harassment.", "ru6": "If a rights holder asks for a file to be removed, the link will be deleted.", "ru7": "Breaking the rules can lead to removed posts or a ban (temporary or permanent). The reason is shown to the banned user.", "hdl": "How to download a file", "gd1": "Sign in (you must be signed in to download).", "gd2": "Tap the file you want in the list.", "gd3": "Tap ⬇ Download. The MediaFire page will open.", "gd4": "On MediaFire, tap the download button (usually green) and wait. If an ad appears, close it and continue.", "gd5": "For APK files, Android may ask you to allow unknown sources. Only install what you trust.", "hcr": "How to create a MediaFire link", "gc1": "Create a free account at mediafire.com (or in the MediaFire app).", "gc2": "Tap Upload or the + button and choose the file from your phone.", "gc3": "Wait for the upload to finish. The file shows up in My Files.", "gc4": "Tap the three dots ⋮ on the file, choose Share or Get link, then Copy link. Names may vary slightly.", "gc5": "Go back to LinkFire, tap Add a link and paste it. It must be from mediafire.com.", "gc6": "Give the file a clear name and pick a category. Do not upload viruses or forbidden content (see the rules).", "ban": "Ban", "banu": "Ban user", "d1": "1 day", "d3": "3 days", "w1": "1 week", "m1": "1 month", "perm": "Permanent", "cust": "Custom…", "hours": "hours", "days": "days", "reasonph": "Ban reason (the user will see it)", "needr": "Write the ban reason.", "doban": "Apply ban", "bnok": "User banned ✅", "bans": "Banned users", "nobans": "No active bans.", "unban": "Unban", "bantxt": "You are banned", "until": "until", "permt": "permanently", "left": "left", "why": "Reason"}};
+Object.keys(L).forEach(l=>{const b=l==="pt"?BX.pt:Object.assign({},BX.en,l==="en"?{}:{});Object.keys(b).forEach(k=>{if(!L[l][k])L[l][k]=b[k]})});
 let lang='pt';try{const sl=localStorage.getItem('lf-lang');if(sl&&L[sl])lang=sl;else{const nl=(navigator.language||'pt').slice(0,2);if(L[nl])lang=nl}}catch(e){}
 const T=k=>(L[lang]&&L[lang][k])||L.pt[k]||k;
 const ICON={apk:'📦',jogos:'🎮',video:'🎬',musica:'🎵',mods:'🧩',docs:'📄',outros:'📁',pcprog:'🖥️',pcjogos:'🕹️',pcsys:'💿',pcutil:'🧰'},CK0=['all','apk','jogos','video','musica','mods','docs','pcsys','outros'],PCK=['pcprog','pcjogos','pcutil'];
@@ -200,9 +211,9 @@ function applyLang(){
  keepSel('osSel',osOpts());$('osSel').hidden=$('cat').value!=='pcsys';
  keepSel('sort',opts([['new',T('s_new')],['pop',T('s_pop')]]));
  keepSel('view',opts([['all',T('v_all')],['fav',T('v_fav')],['mine',T('v_mine')]]));
- keepSel('th',opts([['sys',T('sys')],['light',T('light')],['dark',T('dark')]]));$('th').value=pref;
+ keepSel('th',opts([['sys',T('sys')],['light',T('light')],['dark',T('dark')]]));$('th').value=pref;keepSel('ac',opts(Object.keys(ACC).map(k=>[k,T('ac_'+k)])));$('ac').value=accK;keepSel('fs',opts([['1',T('fs1')],['1.12',T('fs2')],['1.25',T('fs3')]]));$('fs').value=fsK;
  $('lg').innerHTML=Object.keys(L).sort((a,b)=>L[a].n.localeCompare(L[b].n)).map(k=>'<option value="'+k+'">'+L[k].n+'</option>').join('');$('lg').value=lang;
- drawOS();authUI();greet();render()}
+ drawOS();authUI();greet();drawBan();drawOwn();render()}
 const dispName=()=>prof.nick||(me&&me.displayName?me.displayName.split(' ')[0]:'');
 function greet(){const h=$('hello'),n=dispName();if(me&&n){h.hidden=false;h.textContent='👋 '+T('hi').replace('{n}',n)}else h.hidden=true}
 function avatar(){const src=prof.photo||(me&&me.photoURL)||'';const h=src?'<img alt="" referrerpolicy="no-referrer" src="'+esc(src)+'">':'👤';$('acc').innerHTML=h;$('big').innerHTML=h}
@@ -293,19 +304,66 @@ function drawRate(){
   const pv=v=>{inp.style.setProperty('--p',(v/5*100)+'%');lab.textContent=fmtN(v)};
   inp.onpointerdown=e=>{drag=true;try{inp.setPointerCapture(e.pointerId)}catch(x){}pv(calc(e))};
   inp.onpointermove=e=>{if(drag)pv(calc(e))};
-  inp.onpointerup=e=>{if(!drag)return;drag=false;const v=calc(e);setDoc(ref,{linkId:r.id,uid:me.uid,nota:v,createdAt:Date.now()}).catch(()=>{toast(T('err'));drawRate()})};
+  inp.onpointerup=e=>{if(!drag)return;drag=false;if(!guard()){drawRate();return}const v=calc(e);setDoc(ref,{linkId:r.id,uid:me.uid,nota:v,createdAt:Date.now()}).catch(()=>{toast(T('err'));drawRate()})};
   inp.onpointercancel=()=>{drag=false;pv(my)};
   const d=$('rs-d');if(d)d.onclick=()=>deleteDoc(ref).catch(()=>toast(T('err')));
  }
  $('rs-l').innerHTML=cm.length?cm.map(c=>{
   const n=RB[c.linkId+'_'+c.uid],d=c.createdAt?new Date(c.createdAt).toLocaleDateString(lang):'',ph=/^(https:|data:image\/)/.test(c.photo||'')?'<img class="pa" alt="" referrerpolicy="no-referrer" src="'+esc(c.photo)+'">':'';
-  return '<div class="cm"><div class="ch">'+ph+'<b>'+esc(c.nome||'')+'</b>'+tag(c.uid)+(n?starsEl(n,'sm'):'')+'<span class="mt">'+d+'</span></div><p>'+esc(c.texto||'')+'</p>'+((me&&(c.uid===me.uid||isOwner()))?'<button class="mini" data-cd="'+esc(c.id)+'">'+T('del')+'</button>':'')+'</div>'}).join(''):'<div class="mt" style="padding:10px 0">'+T('nocomm')+'</div>';
+  return '<div class="cm"><div class="ch">'+ph+'<b>'+esc(c.nome||'')+'</b>'+tag(c.uid)+(n?starsEl(n,'sm'):'')+'<span class="mt">'+d+'</span></div><p>'+esc(c.texto||'')+'</p>'+((me&&(c.uid===me.uid||isOwner()))?'<button class="mini" data-cd="'+esc(c.id)+'">'+T('del')+'</button>':'')+((isOwner()&&c.uid&&c.uid!==me.uid)?'<button class="mini" data-cb="'+esc(c.uid)+'" data-cn="'+esc(c.nome||'')+'">🔨 '+T('ban')+'</button>':'')+'</div>'}).join(''):'<div class="mt" style="padding:10px 0">'+T('nocomm')+'</div>';
  $('rs-l').querySelectorAll('[data-cd]').forEach(b=>b.onclick=()=>deleteDoc(doc(db,'comments',b.dataset.cd)).catch(()=>toast(T('err'))));
+ $('rs-l').querySelectorAll('[data-cb]').forEach(b=>b.onclick=()=>openBan(b.dataset.cb,b.dataset.cn));
 }
 const pubLine=r=>(r.nick||r.photo||tag(r.uid))?'<div class="pub">'+(r.photo?'<img class="pa" alt="" referrerpolicy="no-referrer" src="'+esc(r.photo)+'">':'')+esc(r.nick||'')+tag(r.uid)+'</div>':'';
+/* aparência */
+const ACC={blue:['#2f6bff','#8a4dff'],green:['#12a150','#0fbf9b'],red:['#e5484d','#ff8a3d'],pink:['#e0408f','#9b5cff'],orange:['#f08a00','#ff5a36']};
+let accK='blue',fsK='1';try{accK=localStorage.getItem('lf-acc')||'blue';fsK=localStorage.getItem('lf-fs')||'1'}catch(e){}
+if(!ACC[accK])accK='blue';
+const applyLook=()=>{if(accK==='blue'){root.style.removeProperty('--accent');root.style.removeProperty('--accent2')}else{root.style.setProperty('--accent',ACC[accK][0]);root.style.setProperty('--accent2',ACC[accK][1])}root.style.setProperty('--fs',fsK)};applyLook();
+$('ac').onchange=()=>{accK=$('ac').value;try{localStorage.setItem('lf-acc',accK)}catch(e){}applyLook()};
+$('fs').onchange=()=>{fsK=$('fs').value;try{localStorage.setItem('lf-fs',fsK)}catch(e){}applyLook()};
+/* ban, regras, tutorial */
+let myBan=null,BANS=[],offB=null,offBs=null;
+const banned=()=>!!(myBan&&(myBan.perm||(myBan.until||0)>Date.now()));
+const okAct=()=>!!(me&&!banned()&&prof.rules);
+const leftTxt=ms=>{const m=Math.max(1,Math.ceil(ms/60000));if(m<60)return m+' min';const h=Math.ceil(m/60);return h<48?h+' h':Math.ceil(h/24)+' '+T('days')};
+const banTxt=b=>b.perm?T('permt'):T('until')+' '+new Date(b.until).toLocaleString(lang)+' ('+T('left')+' '+leftTxt(b.until-Date.now())+')';
+function drawBan(){const e=$('banbar');if(!banned()){e.hidden=true;return}e.hidden=false;e.textContent='🚫 '+T('bantxt')+' · '+banTxt(myBan)+' · '+T('why')+': '+(myBan.reason||'—')}
+setInterval(()=>{drawBan();drawOwn()},30000);
+const hd=t=>'<h2><span>'+t+'</span><button class="sq" id="rx" style="width:38px;height:38px;font-size:16px;flex:none">✕</button></h2>';
+function guard(){
+ if(!me){toast(T('nologin'));$('ov').classList.add('on');return false}
+ if(banned()){drawBan();sh(hd('🚫 '+esc(T('bantxt')))+'<p>'+esc(banTxt(myBan))+'</p><p><b>'+esc(T('why'))+':</b> '+esc(myBan.reason||'—')+'</p>');$('rx').onclick=shClose;return false}
+ if(!prof.rules){openRules(true);return false}
+ return true}
+function openRules(need){
+ sh(hd('📜 '+esc(T('rulesT')))+'<ol class="rl">'+[1,2,3,4,5,6,7].map(i=>'<li>'+esc(T('ru'+i))+'</li>').join('')+'</ol>'+(need?'<button id="ra" style="width:100%">'+esc(T('accept'))+'</button>':''));
+ $('rx').onclick=shClose;const a=$('ra');
+ if(a)a.onclick=async()=>{a.disabled=true;try{await setDoc(doc(db,'users',me.uid),{rules:Date.now()},{merge:true});prof.rules=Date.now();shClose();toast('✅')}catch(e){a.disabled=false;toast(T('err'))}}}
+function openHelp(){
+ sh('<div class="gd">'+hd('📖 '+esc(T('help')))+'<h3>'+esc(T('hdl'))+'</h3><ol>'+[1,2,3,4,5].map(i=>'<li>'+esc(T('gd'+i))+'</li>').join('')+'</ol><h3>'+esc(T('hcr'))+'</h3><ol>'+[1,2,3,4,5,6].map(i=>'<li>'+esc(T('gc'+i))+'</li>').join('')+'</ol></div>');
+ $('rx').onclick=shClose}
+function openBan(u,n){
+ if(!isOwner()||!u||u===me.uid||u===ownerUid){toast(T('err'));return}
+ const o=[['1',T('d1')],['3',T('d3')],['7',T('w1')],['30',T('m1')],['0',T('perm')],['x',T('cust')]];
+ sh(hd('🔨 '+esc(T('banu')))+'<div class="who">'+esc(n||u)+'</div><select id="bd">'+o.map(x=>'<option value="'+x[0]+'">'+esc(x[1])+'</option>').join('')+'</select>'
+ +'<div class="erow" id="bc" style="display:none"><input id="bn" type="number" min="1" value="2" inputmode="numeric"><select id="bu"><option value="h">'+esc(T('hours'))+'</option><option value="d" selected>'+esc(T('days'))+'</option></select></div>'
+ +'<textarea id="br" maxlength="200" style="width:100%;min-height:80px;margin-top:8px;padding:12px;border:1px solid var(--line);border-radius:14px;background:var(--card);color:var(--text);font:inherit" placeholder="'+esc(T('reasonph'))+'"></textarea><button id="bgo" style="width:100%;margin-top:10px">'+esc(T('doban'))+'</button>');
+ $('rx').onclick=shClose;const bd=$('bd');bd.onchange=()=>{$('bc').style.display=bd.value==='x'?'flex':'none'};
+ $('bgo').onclick=async()=>{const reason=$('br').value.trim();if(reason.length<3){toast(T('needr'));return}
+  let perm=false,until=0;const v=bd.value;
+  if(v==='0')perm=true;else{let ms;if(v==='x'){const k=Math.floor(Number($('bn').value));if(!(k>=1)){toast(T('err'));return}ms=k*($('bu').value==='h'?3600000:86400000)}else ms=Number(v)*86400000;
+   if(ms>3650*86400000){toast(T('err'));return}until=Date.now()+ms}
+  try{await setDoc(doc(db,'bans',u),{perm,until,reason,nick:n||'',by:me.uid,createdAt:Date.now()});shClose();toast(T('bnok'))}catch(e){toast(T('err'))}}}
+function drawOwn(){const b=$('ownp');if(!isOwner()){b.innerHTML='';return}
+ const a=BANS.filter(x=>x.perm||(x.until||0)>Date.now());
+ b.innerHTML='<h3>'+esc(T('bans'))+'</h3>'+(a.length?a.map(x=>'<div class="bn"><div><b>'+esc(x.nick||x.id)+'</b><small>'+esc(banTxt(x))+' · '+esc(x.reason||'')+'</small></div><button class="mini" data-ub="'+esc(x.id)+'">'+esc(T('unban'))+'</button></div>').join(''):'<div class="mt">'+esc(T('nobans'))+'</div>')}
+$('ownp').onclick=e=>{const b=e.target.closest('[data-ub]');if(b)deleteDoc(doc(db,'bans',b.dataset.ub)).then(()=>toast('✅')).catch(()=>toast(T('err')))};
+document.addEventListener('click',e=>{const b=e.target.closest('[data-x]');if(!b)return;if(b.dataset.x==='rules')openRules(false);else if(b.dataset.x==='help')openHelp()});
 async function act(a,r){
  if(!r||!db)return;
- if(a==='copy'&&!me){toast(T('nologin'));$('ov').classList.add('on');return}
+ if(a==='ban'){openBan(r.uid,r.nick);return}
+ if((a==='copy'||a==='dl'||a==='rep')&&!guard())return;
  try{
   if(a==='dl'){await updateDoc(doc(db,'links',r.id),{downloads:increment(1)})}
   else if(a==='copy'){try{await navigator.clipboard.writeText(r.url)}catch(x){const t=document.createElement('textarea');t.value=r.url;document.body.appendChild(t);t.select();document.execCommand('copy');t.remove()}toast(T('copied'))}
@@ -323,13 +381,13 @@ function openPost(r){
  const c=catOf(r),d=r.createdAt?new Date(r.createdAt).toLocaleDateString(lang):'',mine=uid()&&r.uid===uid(),f=favs.includes(r.id);
  sh('<h2><span style="overflow-wrap:anywhere">'+esc(r.title)+'</span><button class="sq" id="rx" style="width:38px;height:38px;font-size:16px;flex:none">✕</button></h2>'
  +'<div class="pdet"><div class="ico'+(r.img?' has':'')+'">'+(r.img?'<img class="ci" alt="" src="'+esc(r.img)+'">':ICON[c])+'</div><div class="info"><div class="m" style="margin:0">'+catLbl(r,c)+' · ⬇ '+(r.downloads||0)+(d?' · '+d:'')+'</div>'+pubLine(r)+'</div></div>'
- +'<a class="dl bigdl" data-a="dl" href="'+(me?esc(r.url):'#')+'" target="_blank" rel="noopener noreferrer">'+(me?T('dl'):T('dlogin'))+'</a>'
- +'<div class="acts" style="margin-top:10px"><button class="mini" id="pf" data-a="fav">'+(f?T('faved'):T('fav'))+'</button><button class="mini" data-a="copy">'+T('copy')+'</button><button class="mini" data-a="rep">'+T('rep')+'</button>'+(mine?'<button class="mini" data-a="edit">'+T('edit')+'</button>':'')+((mine||isOwner())?'<button class="mini" data-a="del">'+T('del')+'</button>':'')+'</div>'
+ +'<a class="dl bigdl" data-a="dl" href="'+(okAct()?esc(r.url):'#')+'" target="_blank" rel="noopener noreferrer">'+(me?T('dl'):T('dlogin'))+'</a>'
+ +'<div class="acts" style="margin-top:10px"><button class="mini" id="pf" data-a="fav">'+(f?T('faved'):T('fav'))+'</button><button class="mini" data-a="copy">'+T('copy')+'</button><button class="mini" data-a="rep">'+T('rep')+'</button>'+(mine?'<button class="mini" data-a="edit">'+T('edit')+'</button>':'')+((mine||isOwner())?'<button class="mini" data-a="del">'+T('del')+'</button>':'')+((isOwner()&&r.uid&&r.uid!==me.uid)?'<button class="mini" data-a="ban">🔨 '+T('ban')+'</button>':'')+'</div>'
  +'<div id="rs-sum"></div><div id="rs-my"></div><h3>'+T('comm')+'</h3><textarea id="rs-t" maxlength="500" placeholder="'+esc(T('writec'))+'"></textarea><button id="rs-s" class="opt" style="margin-top:8px;text-align:center">'+T('sendc')+'</button><div id="rs-l"></div>');
  curR=r;cm=[];drag=false;
  $('rx').onclick=shClose;
  $('rs-s').onclick=async()=>{
-  if(!me){toast(T('nologin'));return}
+  if(!guard())return;
   const t=$('rs-t').value.trim().slice(0,500);if(!t)return;
   if(blocked(t,'')){toast(T('cblk'));return}
   const b=$('rs-s');b.disabled=true;
@@ -339,14 +397,14 @@ function openPost(r){
  offC=onSnapshot(query(collection(db,'comments'),where('linkId','==',r.id),limit(200)),s=>{cm=s.docs.map(d=>({...d.data(),id:d.id})).sort((a,b)=>(b.createdAt||0)-(a.createdAt||0));drawRate()},()=>{});
  drawRate()}
 $('sh2').addEventListener('click',e=>{const b=e.target.closest('[data-a]');if(!b||!curR)return;
- if(b.dataset.a==='dl'){if(!me){e.preventDefault();shClose();toast(T('nologin'));$('ov').classList.add('on');return}b.href=curR.url;b.textContent=T('dl')}
+ if(b.dataset.a==='dl'){if(me&&!okAct()){e.preventDefault();guard();return}if(!me){e.preventDefault();shClose();toast(T('nologin'));$('ov').classList.add('on');return}b.href=curR.url;b.textContent=T('dl')}
  act(b.dataset.a,curR)});
 $('list').addEventListener('click',e=>{const it=e.target.closest('.item');if(!it)return;const r=rows.find(x=>x.id===it.dataset.id);if(r)openPost(r)});
 $('list').addEventListener('keydown',e=>{if(e.key!=='Enter')return;const it=e.target.closest('.item');if(!it)return;const r=rows.find(x=>x.id===it.dataset.id);if(r)openPost(r)});
 $('q').oninput=render;$('sort').onchange=render;$('view').onchange=render;
 $('send').onclick=async()=>{
  const u=$('url').value.trim(),t=$('title').value.trim();
- if(!me){say(T('nologin'),true);$('ov').classList.add('on');return}
+ if(!guard())return;
  if(!validMF(u)){say(T('bad'),true);return}
  if(t.length<2){say(T('needname'),true);$('title').focus();return}
  if(blocked(t,u)){say(T('blk'),true);return}
@@ -389,10 +447,11 @@ if(firebaseConfig.apiKey&&firebaseConfig.apiKey!=='COLE_AQUI'){
  onSnapshot(collection(db,'ratings'),s=>{RT={};RB={};s.docs.forEach(d=>{const x=d.data();if(!x.linkId||typeof x.nota!=='number')return;RB[d.id]=x.nota;const a=RT[x.linkId]=RT[x.linkId]||{s:0,n:0};a.s+=x.nota;a.n++});render();if(curR)drawRate()},()=>{});
  onSnapshot(doc(db,'meta','owner'),s=>{ownerUid=s.exists()?s.data().uid:null;authUI();render();if(curR)drawRate()},()=>{});
   onAuthStateChanged(auth,async u=>{
-  me=u;favs=[];prof={};
+  me=u;favs=[];prof={};myBan=null;BANS=[];if(offB){offB();offB=null}if(offBs){offBs();offBs=null}drawBan();
    if(u&&isOwner()){setDoc(doc(db,'meta','owner'),{uid:u.uid}).catch(()=>{})}
-  if(u){try{const d=await getDoc(doc(db,'users',u.uid));const x=d.exists()?d.data():{};favs=x.favs||[];prof={nick:x.nick||'',photo:x.photo||null}}catch(e){}}
-  avatar();authUI();greet();render();if(curR)drawRate()});
+  if(u){try{const d=await getDoc(doc(db,'users',u.uid));const x=d.exists()?d.data():{};favs=x.favs||[];prof={nick:x.nick||'',photo:x.photo||null,rules:x.rules||0}}catch(e){}}
+  if(u){offB=onSnapshot(doc(db,'bans',u.uid),s=>{myBan=s.exists()?s.data():null;drawBan()},()=>{});if(isOwner())offBs=onSnapshot(collection(db,'bans'),s=>{BANS=s.docs.map(d=>({...d.data(),id:d.id}));drawOwn()},()=>{})}
+  avatar();authUI();greet();drawOwn();render();if(curR)drawRate()});
 }
 avatar();render();
 if('serviceWorker' in navigator)navigator.serviceWorker.register('sw.js').catch(()=>{});
